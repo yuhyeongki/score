@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { SubjectData } from '../types';
-import { Plus, Trash2, ArrowUpRight, ArrowDownRight, Clock, BarChart3, TrendingUp, HelpCircle } from 'lucide-react';
+import { Plus, Trash2, ArrowUpRight, ArrowDownRight, Clock, BarChart3, TrendingUp, HelpCircle, FileSpreadsheet } from 'lucide-react';
 
 interface ScoreAnalyticsTabProps {
   subjects: SubjectData[];
   onUpdateSubject: (subjectId: string, updatedFields: Partial<SubjectData>) => void;
   onAddSubject: (newSubject: SubjectData) => void;
   onDeleteSubject: (subjectId: string) => void;
+  onOpenGoogleSheetsModal: () => void;
 }
 
 export const ScoreAnalyticsTab: React.FC<ScoreAnalyticsTabProps> = ({
@@ -14,6 +15,7 @@ export const ScoreAnalyticsTab: React.FC<ScoreAnalyticsTabProps> = ({
   onUpdateSubject,
   onAddSubject,
   onDeleteSubject,
+  onOpenGoogleSheetsModal,
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newSubName, setNewSubName] = useState('');
@@ -64,13 +66,23 @@ export const ScoreAnalyticsTab: React.FC<ScoreAnalyticsTabProps> = ({
               </span>
             </h2>
           </div>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors shrink-0"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>새 과목 추가</span>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={onOpenGoogleSheetsModal}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+              title="Google 스프레드시트 링크에서 성적 데이터 일괄 가져오기"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Google 시트에서 가져오기</span>
+            </button>
+            <button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>새 과목 추가</span>
+            </button>
+          </div>
         </div>
 
         {/* Add Subject Collapsible Form */}

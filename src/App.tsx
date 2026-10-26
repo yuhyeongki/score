@@ -13,6 +13,7 @@ import { HabitSurveyTab } from './components/HabitSurveyTab';
 import { AiCounselingTab } from './components/AiCounselingTab';
 import { ParentReportTab } from './components/ParentReportTab';
 import { AddStudentModal } from './components/AddStudentModal';
+import { GoogleSheetsImportModal } from './components/GoogleSheetsImportModal';
 import { Sparkles, AlertCircle } from 'lucide-react';
 
 const STORAGE_KEY = 'eduplan_students_data_v1';
@@ -35,6 +36,7 @@ export default function App() {
   );
   const [activeTab, setActiveTab] = useState<string>('analytics');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isGoogleSheetsModalOpen, setIsGoogleSheetsModalOpen] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -58,7 +60,7 @@ export default function App() {
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+    setTimeout(() => setToastMessage(null), 3500);
   };
 
   // Subject actions
@@ -85,6 +87,25 @@ export default function App() {
       subjects: prev.subjects.filter((sub) => sub.id !== subjectId),
     }));
     showToast('과목이 삭제되었습니다.');
+  };
+
+  // Google Sheets import handlers
+  const handleApplySubjectsFromSheet = (newSubjects: SubjectData[]) => {
+    updateCurrentStudent((prev) => ({
+      ...prev,
+      subjects: newSubjects,
+      counselingAnalysis: undefined, // prompt re-counseling with new data
+    }));
+    showToast(
+      `Google 시트에서 ${newSubjects.length}개 과목 성적을 불러와 차트와 등급에 즉시 반영했습니다!`
+    );
+  };
+
+  const handleAddNewStudentFromSheet = (newStudent: StudentProfile) => {
+    setStudents((prev) => [newStudent, ...prev]);
+    setSelectedStudentId(newStudent.id);
+    setActiveTab('analytics');
+    showToast(`Google 시트 데이터를 기반으로 새 학생 '${newStudent.name}'이 등록되었습니다.`);
   };
 
   // Habit survey action
@@ -251,6 +272,7 @@ export default function App() {
         currentStudent={currentStudent}
         onSelectStudent={setSelectedStudentId}
         onOpenAddModal={() => setIsAddModalOpen(true)}
+        onOpenGoogleSheetsModal={() => setIsGoogleSheetsModalOpen(true)}
         onResetDemo={handleResetDemo}
         onPrint={handlePrint}
         activeTab={activeTab}
@@ -275,6 +297,7 @@ export default function App() {
             onUpdateSubject={handleUpdateSubject}
             onAddSubject={handleAddSubject}
             onDeleteSubject={handleDeleteSubject}
+            onOpenGoogleSheetsModal={() => setIsGoogleSheetsModalOpen(true)}
           />
         )}
 
@@ -310,6 +333,15 @@ export default function App() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAddStudent={handleAddStudent}
+      />
+
+      {/* Google Sheets Import Modal */}
+      <GoogleSheetsImportModal
+        isOpen={isGoogleSheetsModalOpen}
+        onClose={() => setIsGoogleSheetsModalOpen(false)}
+        currentStudent={currentStudent}
+        onApplySubjects={handleApplySubjectsFromSheet}
+        onAddNewStudent={handleAddNewStudentFromSheet}
       />
 
       {/* Toast Notification */}

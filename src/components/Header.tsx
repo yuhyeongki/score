@@ -1,12 +1,13 @@
 import React from 'react';
 import { StudentProfile } from '../types';
-import { GraduationCap, Printer, UserPlus, RotateCcw, ChevronDown } from 'lucide-react';
+import { GraduationCap, Printer, UserPlus, RotateCcw, ChevronDown, FileSpreadsheet } from 'lucide-react';
 
 interface HeaderProps {
   students: StudentProfile[];
   currentStudent: StudentProfile;
   onSelectStudent: (id: string) => void;
   onOpenAddModal: () => void;
+  onOpenGoogleSheetsModal: () => void;
   onResetDemo: () => void;
   onPrint: () => void;
   activeTab: string;
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   currentStudent,
   onSelectStudent,
   onOpenAddModal,
+  onOpenGoogleSheetsModal,
   onResetDemo,
   onPrint,
   activeTab,
@@ -106,6 +108,17 @@ export const Header: React.FC<HeaderProps> = ({
               </select>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
+
+            {/* Google Sheets Import Button */}
+            <button
+              onClick={onOpenGoogleSheetsModal}
+              title="Google 스프레드시트 링크에서 성적 가져오기"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors whitespace-nowrap shadow-2xs"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+              <span className="hidden lg:inline">시트 연동</span>
+              <span className="lg:hidden">시트</span>
+            </button>
 
             {/* Add Student Button */}
             <button
