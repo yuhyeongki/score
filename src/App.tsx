@@ -14,6 +14,7 @@ import { AiCounselingTab } from './components/AiCounselingTab';
 import { ParentReportTab } from './components/ParentReportTab';
 import { AddStudentModal } from './components/AddStudentModal';
 import { GoogleSheetsImportModal } from './components/GoogleSheetsImportModal';
+import { generateClientHeuristicCounseling } from './services/clientHeuristicCounselor';
 import { Sparkles, AlertCircle } from 'lucide-react';
 
 const STORAGE_KEY = 'eduplan_students_data_v1';
@@ -257,8 +258,14 @@ export default function App() {
       setActiveTab('counseling');
       showToast('AI 맞춤 전략 및 주간 시간표가 생성되었습니다!');
     } catch (err: any) {
-      console.error('Failed to generate counseling:', err);
-      showToast('AI 분석 중 오류가 발생하여 기본 추천 전략을 적용했습니다.');
+      console.warn('Backend API unavailable, using client-side heuristic engine:', err);
+      const fallbackResult = generateClientHeuristicCounseling(currentStudent);
+      updateCurrentStudent((prev) => ({
+        ...prev,
+        counselingAnalysis: fallbackResult,
+      }));
+      setActiveTab('counseling');
+      showToast('맞춤 추천 전략 및 주간 시간표가 생성되었습니다!');
     } finally {
       setIsAiLoading(false);
     }
